@@ -1,18 +1,19 @@
 # Use the official image as a parent image.
 FROM ubuntu
 
+# Ultimately, we'll be using UDP port 19132
+EXPOSE 19132/udp
+
 # Get curl
 RUN apt update && apt install -y curl
 
 # Make a "minecraft" user
-RUN useradd -ms /bin/bash minecraft
+ARG uid
+RUN useradd --uid $uid -ms /bin/bash minecraft
 
-# Make a subdir in minecraft's home, and chown it
-WORKDIR /home/minecraft/pmmp
-RUN chown -R minecraft /home/minecraft
-
-# Ultimately, we'll be using UDP port 19132
-EXPOSE 19132/udp
+# Make a working directory
+WORKDIR /minecraft-pmmp
+RUN chown -R minecraft /minecraft-pmmp
 
 # Run the rest of the commands as a "minecraft" user
 USER minecraft

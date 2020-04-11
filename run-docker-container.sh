@@ -9,15 +9,26 @@ pushd $host_dir
 host_dir=`pwd`
 popd
 
-export_dir="$host_dir/export-from-container"
-if test ! "$export_dir"; then
-    mkdir -p "$export_dir"
+container_app_root=/minecraft-pmmp
+
+host_players_dir="$host_dir/players"
+host_worlds_dir="$host_dir/worlds"
+if test ! -d "$host_players_dir"; then
+    mkdir -p "$host_players_dir"
+fi
+if test ! -d "$host_worlds_dir"; then
+    mkdir -p "$host_worlds_dir"
+fi
+
+if test -r "$host_dir/ip.txt"; then
+    ip=`cat $host_dir/ip.txt`:
 fi
 
 docker run \
        --detach \
-       --publish 19132:19132/udp \
-       -v $export_dir:/export-to-host \
+       --publish ${ip}19132:19132/udp \
+       -v $host_players_dir:$container_app_root/players \
+       -v $host_worlds_dir:$container_app_root/worlds \
        --name $container_name \
        minecraft-bedrock-server
 
